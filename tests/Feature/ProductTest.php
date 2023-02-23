@@ -7,6 +7,7 @@ use App\Models\Type;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -78,5 +79,13 @@ class ProductTest extends TestCase
         $response = $this->getJson("/api/products/$productOnDb->id");
 
         $response->assertStatus(200);
+        $response->assertJson(fn (AssertableJson $json) =>
+            $json->where('id', 1)
+                ->where('name', 'Test Product')
+                ->where('price', 40.5)
+                ->where('quantity', 5)
+                ->where('type', 'unit')
+                ->etc()
+        );
     }
 }
