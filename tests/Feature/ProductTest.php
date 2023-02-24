@@ -5,8 +5,6 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\Type;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -88,4 +86,50 @@ class ProductTest extends TestCase
                 ->etc()
         );
     }
+
+    public function test_update_product_wrong_type_quantity_field()
+    {
+        $response = $this->postJson('/api/products',
+            [
+                'name' => 'Test Product',
+                'price' => 40.5,
+                'expiration_date' => Carbon::now()->addDays(5),
+                'quantity' => 'Not a number'
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonPath('message', 'The quantity field must be a number.');
+    }
+
+    public function test_update_product_all_correct_fields_should_return_200()
+    {
+        $response = $this->postJson('/api/products',
+            [
+                'name' => 'Test Product Updated',
+                'price' => 40.5,
+                'expiration_date' => Carbon::now()->addDays(5)->format("Y-m-d"),
+                'quantity' => '5',
+                'type'  => Type::unit,
+            ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonPath('name', 'Test Product Updated');
+    }
+
+
+    public function test_delete_non_existent_product_should_return_404()
+    {
+        $response = $this->deleteJson('/api/products/9999');
+
+        $response->assertStatus(404);
+    }
+
+    public function test_delete_existent_product_should_return_204()
+    {
+        $productOnDb = Product::first();
+        $response = $this->deleteJson("/api/products/$productOnDb->id");
+
+        $response->assertStatus(204);
+    }
+
 }

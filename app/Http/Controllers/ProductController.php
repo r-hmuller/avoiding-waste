@@ -30,7 +30,7 @@ class ProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'expiration_date' => 'required|date|after:now',
             'type' => [new Enum(Type::class)],
@@ -39,7 +39,7 @@ class ProductController extends Controller
         ]);
 
         $input = $request->input();
-        $product = $this->productService->saveProduct($input);
+        $product = $this->productService->save($input);
 
         return response()->json($product, 201);
     }
@@ -57,7 +57,18 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product): JsonResponse
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'expiration_date' => 'required|date|after:now',
+            'type' => [new Enum(Type::class)],
+            'price' => 'required|numeric',
+            'quantity' => 'required|numeric'
+        ]);
+
+        $input = $request->input();
+        $product = $this->productService->update($product, $input);
+
+        return response()->json($product);
     }
 
     /**
@@ -65,7 +76,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product): JsonResponse
     {
-        $this->productService->deleteProduct($product);
+        $this->productService->delete($product);
 
         return response()->json([], 204);
     }

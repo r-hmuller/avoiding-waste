@@ -12,7 +12,7 @@ class ProductService
         return Product::valid()->get();
     }
 
-    public function saveProduct(array $requestData): Product
+    public function save(array $requestData): Product
     {
         $product = new Product($requestData);
         $product->save();
@@ -20,8 +20,13 @@ class ProductService
         return $product;
     }
 
-    public function deleteProduct(Product $product): void
+    public function delete(Product $product): void
     {
         $product->delete();
+    }
+
+    public function update(Product $product, array $requestData)
+    {
+        $product->update($requestData);
     }
 }
