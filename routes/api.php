@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use \App\Http\Controllers\ConsumptionController;
 use \App\Http\Controllers\ProductController;
+use App\Models\Consumption;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +22,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('products')->group(function () {
-    Route::get('/', [ProductController::class, 'index']);
-    Route::post('/', [ProductController::class, 'store']);
-    Route::get('/{product}', [ProductController::class, 'show']);
-    Route::delete('/{product}', [ProductController::class, 'destroy']);
-    Route::put('/{product}', [ProductController::class, 'update']);
+Route::resource('products', ProductController::class, ['except' => ['create', 'edit']]);
+Route::resource('products.consumptions', ConsumptionController::class, ['except' => ['create', 'edit']]);
+
+Route::bind('consumption', function ($consumption, $route) {
+    return Consumption::where('product_id', $route->parameter('product'))->findOrFail($consumption);
 });

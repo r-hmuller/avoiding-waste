@@ -18,6 +18,7 @@ return new class extends Migration
             $table->float('price')->unsigned()->nullable(false);
             $table->enum('type', ['unit', 'kilogram'])->default('kilogram');
             $table->float('quantity')->unsigned()->nullable(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

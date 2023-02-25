@@ -14,8 +14,11 @@ return new class extends Migration
     {
         Schema::create('consumptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(Product::class)->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');;
             $table->float('quantity')->unsigned()->nullable(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
